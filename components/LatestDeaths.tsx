@@ -50,7 +50,7 @@ export default function LatestDeaths() {
         </TableBody>
       </Table>
       <div className={classes.seeMore}>
-        <Link color="primary" href="#" onClick={preventDefault}>
+        <Link color="primary" href="#" onClick={preventDefault} hidden={true}>
           See more orders
         </Link>
       </div>

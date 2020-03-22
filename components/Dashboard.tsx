@@ -20,8 +20,7 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import { mainListItems, secondaryListItems } from "./listItems";
 import Chart from "./Chart";
-import Deposits from "./Deposits";
-import Orders from "./LatestDeaths";
+import Summary from "./Summary";
 import { useJHUAggregateData } from "../src/data";
 import { useHasMounted } from "../src/util";
 import LatestDeaths from "./LatestDeaths";
@@ -30,11 +29,13 @@ import Selections from "./Selections";
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
-      {"Copyright © "}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
-      </Link>{" "}
-      {new Date().getFullYear()}
+      {"For all from "}
+      <Link color="inherit" href="https://bltgv.com/">
+        BLT
+      </Link>{" with special thanks to JHU CSSE for their "}
+      <Link color="inherit" href="https://github.com/CSSEGISandData">
+        data
+      </Link>
       {"."}
     </Typography>
   );
@@ -123,9 +124,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Dashboard() {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(true);
-  const hasMounted = useHasMounted();
-  const aggregateData = useJHUAggregateData();
+  const [open, setOpen] = React.useState(false);
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -163,11 +162,11 @@ export default function Dashboard() {
           >
             COVID-19 Supplemental Presentation
           </Typography>
-          <IconButton color="inherit">
+          {/* <IconButton color="inherit">
             <Badge badgeContent={4} color="secondary">
               <NotificationsIcon />
             </Badge>
-          </IconButton>
+          </IconButton> */}
         </Toolbar>
       </AppBar>
       <Drawer
@@ -205,7 +204,7 @@ export default function Dashboard() {
             {/* Recent Deposits */}
             <Grid item xs={12} md={4} lg={3}>
               <Paper className={fixedHeightPaper}>
-                <Deposits />
+                <Summary />
               </Paper>
             </Grid>
             {/* Recent Orders */}

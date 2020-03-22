@@ -12,6 +12,8 @@ import {
 } from "recharts";
 import Title from "./Title";
 import { useSelectedLocaleData } from "../src/state";
+import { isNil } from "ramda";
+import { Typography } from "@material-ui/core";
 
 // Generate Sales Data
 function createData(time, amount) {
@@ -22,13 +24,20 @@ export default function Chart() {
   const theme = useTheme();
   const data = useSelectedLocaleData();
 
+  if (isNil(data))
+    return (
+      <Typography>
+        Select a Country; and Provence if needed.
+      </Typography>
+    );
+
   const filteredSeries = data.series.filter(
     ({ cumulativeDeaths }) => cumulativeDeaths > 0
   );
 
   return (
     <React.Fragment>
-      <Title>{`${data.countryOrRegion} -- ${data.provenceOrState}`}</Title>
+      <Title>{`${data.countryOrRegion}${data.provenceOrState === "" ? "": " -- " + data.provenceOrState}`}</Title>
       <ResponsiveContainer>
         <LineChart
           data={filteredSeries}

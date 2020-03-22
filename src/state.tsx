@@ -1,4 +1,4 @@
-import { JHUAggregateData, useJHUAggregateData } from "./data";
+import { JHUAggregateData, useJHUAggregateData, LocationData } from "./data";
 import {
   useReducer,
   createContext,
@@ -6,6 +6,7 @@ import {
   useContext,
   Dispatch
 } from "react";
+import { path } from "ramda";
 
 export interface SelectionState {
   selectedCountry: string;
@@ -96,9 +97,10 @@ export function useSelectionState() {
 export function useSelectedLocaleData() {
   const data = useJHUAggregateData();
   const { selectedCountry, selectedProvence } = useSelectionState();
-  const [selectedSeries] = data.locations
-    .filter(({ countryOrRegion }) => countryOrRegion === selectedCountry)
-    .filter(({ provenceOrState }) => provenceOrState === selectedProvence);
+  const selectedSeries: LocationData = path(
+    [selectedCountry, selectedProvence],
+    data.locationsMap
+  );
 
   return selectedSeries;
 }

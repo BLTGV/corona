@@ -1,8 +1,8 @@
 import { Autocomplete } from "@material-ui/lab";
-import { TextField } from "@material-ui/core";
+import { TextField, Box } from "@material-ui/core";
 import { useSelectionState } from "../src/state";
 import { useJHUAggregateData } from "../src/data";
-import { uniq } from "ramda";
+import { uniq, includes, isNil, keys, equals } from "ramda";
 
 export default function Selections() {
   const {
@@ -12,42 +12,49 @@ export default function Selections() {
     handleProvenceChange
   } = useSelectionState();
 
-  const { locations } = useJHUAggregateData();
-  
+  const { locations, locationsMap } = useJHUAggregateData();
+
+  const onProvenceChange = (e, v, reason: string) => {
+    if (isNil(v)) return handleProvenceChange("");
+    return handleProvenceChange(v);
+  };
+
+  const countryOption: any = keys(locationsMap).sort();
+  const provenceOption: any = isNil(locationsMap[selectedCountry])
+    ? ""
+    : keys(locationsMap[selectedCountry])
+        .sort()
+        .filter(v => v !== "");
+
   return (
-    <>
-      <Autocomplete
-        id="combo-box-countryOrRegion"
-        options={uniq(
-          locations.map(({ countryOrRegion }) => countryOrRegion).sort()
-        )}
-        value={selectedCountry}
-        onChange={(e, v) => handleCountryChange(v)}
-        getOptionLabel={option => option}
-        style={{ width: 300 }}
-        renderInput={params => (
-          <TextField {...params} label="Country/Region" variant="outlined" />
-        )}
-      />
-      <Autocomplete
-        id="combo-box-provenceOrState"
-        options={uniq(
-          locations
-            .filter(
-              ({ countryOrRegion }) => countryOrRegion === selectedCountry
-            )
-            .map(({ provenceOrState }) => provenceOrState)
-            .sort()
-        )}
-        value={selectedProvence}
-        disabled={selectedCountry === ""}
-        onChange={(e, v) => handleProvenceChange(v)}
-        getOptionLabel={option => option}
-        style={{ width: 300 }}
-        renderInput={params => (
-          <TextField {...params} label="Provence/State" variant="outlined" />
-        )}
-      />
-    </>
+    <Box display="flex" flexWrap="wrap" justifyContent="center">
+      <Box m={3}>
+        <Autocomplete
+          id="combo-box-countryOrRegion"
+          options={countryOption}
+          value={selectedCountry}
+          onChange={(e, v) => handleCountryChange(v)}
+          getOptionLabel={option => option}
+          style={{ width: 300 }}
+          renderInput={params => (
+            <TextField {...params} label="Country/Region" variant="outlined" />
+          )}
+        />
+      </Box>
+      <Box m={3}>
+        <Autocomplete
+          id="combo-box-provenceOrState"
+          options={provenceOption}
+          value={selectedProvence}
+          disabled={selectedCountry === ""}
+          onChange={onProvenceChange}
+          getOptionLabel={option => option}
+          style={{ width: 300 }}
+          renderInput={params => (
+            <TextField {...params} label="Provence/State" variant="outlined" />
+          )}
+        />
+      </Box>
+    </Box>
   );
 }

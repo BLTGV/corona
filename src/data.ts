@@ -87,7 +87,7 @@ const transformDatum = (datum: CoronaTrackerCsvRow): LocationData => {
     lastCumulativeDeaths: lastDatum.cumulativeDeaths,
     lastDeltaDeaths: lastDatum.deltaDeaths,
     lastMovingAverageDeaths: lastDatum.movingAverageDeaths
-  }
+  };
 
   return {
     sourceDatum: datum,
@@ -98,22 +98,44 @@ const transformDatum = (datum: CoronaTrackerCsvRow): LocationData => {
   };
 };
 
+// Country, Provence Map
+interface LocationDataMap{
+  [country: string]: object;
+};
+
 export interface JHUAggregateData {
   locations: LocationData[];
+  locationsMap: LocationDataMap;
 }
 
-export const JHUAggregateDataContext: Context<JHUAggregateData> = createContext(null);
+export const JHUAggregateDataContext: Context<JHUAggregateData> = createContext(
+  null
+);
 
 export function useJHUAggregateData(): JHUAggregateData {
   return useContext(JHUAggregateDataContext);
 }
 
-export async function getJHUAggregateData() {
+export async function getJHUAggregateData(): Promise<JHUAggregateData> {
   const raw = await retrieveData();
-  const transformed = reverse(sortBy(d => d.lastDeltaDeaths ,raw.map(transformDatum)));
+  const transformed = reverse(
+    sortBy(d => d.lastDeltaDeaths, raw.map(transformDatum))
+  );
+  let locationsMap = {};
+  transformed.forEach((location: LocationData) => {
+    if (!locationsMap[location.countryOrRegion]) {
+      locationsMap[location.countryOrRegion] = {};
+    }
+
+    locationsMap
+      [location.countryOrRegion]
+      [location.provenceOrState] = location;
+  });
+
   const summarized = {
-    locations: transformed
-  }
+    locations: transformed,
+    locationsMap
+  };
 
   return summarized;
 }
