@@ -1,7 +1,8 @@
+import { createContext, useContext, Context } from "react";
 import fetch from "node-fetch";
 import Papa from "papaparse";
-import { keys, isNil } from "ramda";
-import { isValid } from "date-fns";
+import { keys, isNil, sortBy, last, reverse } from "ramda";
+import { isValid, lastDayOfQuarter } from "date-fns";
 import { ma } from "moving-averages";
 
 const URL =
@@ -15,7 +16,7 @@ export interface CoronaTrackerCsvRow {
   [date: string]: string;
 }
 
-export const retrieveData = async (): Promise<CoronaTrackerCsvRow[]> => {
+const retrieveData = async (): Promise<CoronaTrackerCsvRow[]> => {
   const res = await fetch(URL);
   const rows = await res.text();
 
@@ -36,9 +37,13 @@ export interface LocationData {
   countryOrRegion: string;
   provenceOrState: string;
   series: SeriesDatum[];
+  lastPeriod: string;
+  lastCumulativeDeaths: number;
+  lastDeltaDeaths: number;
+  lastMovingAverageDeaths: number;
 }
 
-export const transformDatum = (datum: CoronaTrackerCsvRow): LocationData => {
+const transformDatum = (datum: CoronaTrackerCsvRow): LocationData => {
   const isKeyDate = (key: string) => {
     return isValid(new Date(key));
   };
@@ -76,11 +81,39 @@ export const transformDatum = (datum: CoronaTrackerCsvRow): LocationData => {
       };
     }
   );
+  const lastDatum = last(withMovingAverageDeltaSeries);
+  const latest = {
+    lastPeriod: lastDatum.date,
+    lastCumulativeDeaths: lastDatum.cumulativeDeaths,
+    lastDeltaDeaths: lastDatum.deltaDeaths,
+    lastMovingAverageDeaths: lastDatum.movingAverageDeaths
+  }
 
   return {
     sourceDatum: datum,
     series: withMovingAverageDeltaSeries,
     countryOrRegion: datum["Country/Region"],
-    provenceOrState: datum["Province/State"]
+    provenceOrState: datum["Province/State"],
+    ...latest
   };
 };
+
+export interface JHUAggregateData {
+  locations: LocationData[];
+}
+
+export const JHUAggregateDataContext: Context<JHUAggregateData> = createContext(null);
+
+export function useJHUAggregateData(): JHUAggregateData {
+  return useContext(JHUAggregateDataContext);
+}
+
+export async function getJHUAggregateData() {
+  const raw = await retrieveData();
+  const transformed = reverse(sortBy(d => d.lastDeltaDeaths ,raw.map(transformDatum)));
+  const summarized = {
+    locations: transformed
+  }
+
+  return summarized;
+}
