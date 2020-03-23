@@ -21,7 +21,7 @@ export default function Selections() {
 
   const countryOption: any = keys(locationsMap).sort();
   const provenceOption: any = isNil(locationsMap[selectedCountry])
-    ? ""
+    ? [""]
     : keys(locationsMap[selectedCountry])
         .sort()
         .filter(v => v !== "");

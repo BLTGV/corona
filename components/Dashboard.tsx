@@ -17,12 +17,10 @@ import Paper from "@material-ui/core/Paper";
 import Link from "@material-ui/core/Link";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import NotificationsIcon from "@material-ui/icons/Notifications";
+import GitHubIcon from '@material-ui/icons/GitHub';
 import { mainListItems, secondaryListItems } from "./listItems";
 import Chart from "./Chart";
 import Summary from "./Summary";
-import { useJHUAggregateData } from "../src/data";
-import { useHasMounted } from "../src/util";
 import LatestDeaths from "./LatestDeaths";
 import Selections from "./Selections";
 
@@ -30,10 +28,11 @@ function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {"For all from "}
-      <Link color="inherit" href="https://bltgv.com/">
+      <Link color="inherit" href="https://bltgv.com/" target="_blank">
         BLT
-      </Link>{" with special thanks to JHU CSSE for their "}
-      <Link color="inherit" href="https://github.com/CSSEGISandData">
+      </Link>
+      {" with special thanks to JHU CSSE for their "}
+      <Link color="inherit" href="https://github.com/CSSEGISandData" target="_blank">
         data
       </Link>
       {"."}
@@ -162,11 +161,9 @@ export default function Dashboard() {
           >
             COVID-19 Supplemental Presentation
           </Typography>
-          {/* <IconButton color="inherit">
-            <Badge badgeContent={4} color="secondary">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton> */}
+          <IconButton color="inherit" href="https://github.com/BLTGV/corona" target="_blank">
+            <GitHubIcon />
+          </IconButton>
         </Toolbar>
       </AppBar>
       <Drawer
