@@ -1,0 +1,7 @@
+# These rules will change if you change your site’s custom domains or HTTPS settings
+
+# Redirect domain aliases to primary domain
+https://virus.bltgv.com/* https://covid19.bltgv.com/:splat 301!
+
+# Optional: Redirect default Netlify subdomain to primary domain
+https://hardcore-kepler-94be54.netlify.com/* https://covid19.bltgv.com/:splat 301!
