@@ -68,25 +68,27 @@ const useStyles = makeStyles(theme => ({
 
 export default function LatestDeaths() {
   const classes = useStyles();
-  const { selectedCountry, selectedProvence } = useSelectionState();
+  const { selectedCountry, selectedProvence, handleCountryChange, handleProvenceChange } = useSelectionState();
   const data = useJHUAggregateData();
   const subset = take(10, data.locations);
   
-  // const getMuiTheme = () => createMuiTheme({
-  //   overrides: {
-  //     MuiTypography: {
-  //       h6: {
-  //         color: <theme className="palette prim"></theme>
-  //       }
-  //     }
-  //   }
-  // })
+  const onRowsSelect = ([{ dataIndex }]) => {
+    const {countryOrRegion, provenceOrState} = data.locations[dataIndex];
+    const isSameCountry = countryOrRegion === selectedCountry;
+    const isSameProvence = provenceOrState === selectedProvence;
+    if(isSameCountry && isSameProvence) return;
+
+    if(!isSameCountry) handleCountryChange(countryOrRegion);
+    if(!isSameProvence) handleProvenceChange(provenceOrState);
+
+  }
 
   const options = {
     filterType: "checkbox",
-    selectableRows: "none",
+    selectableRows: "single",
     rowsPerPage: 15,
-    customToolbarSelect: () => null
+    disableToolbarSelect: true,
+    onRowsSelect
   };
 
   return (
