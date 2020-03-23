@@ -22,6 +22,13 @@ const theme = createMuiTheme({
       secondary: "#707070",
       disabled: "#d6d6d6"
     }
+  },
+  overrides: {
+    MuiTypography: {
+      h6: {
+        color: "#ffab01"
+      }
+    }
   }
 });
 

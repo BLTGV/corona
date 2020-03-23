@@ -17,7 +17,7 @@ import Paper from "@material-ui/core/Paper";
 import Link from "@material-ui/core/Link";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import GitHubIcon from '@material-ui/icons/GitHub';
+import GitHubIcon from "@material-ui/icons/GitHub";
 import { mainListItems, secondaryListItems } from "./listItems";
 import Chart from "./Chart";
 import Summary from "./Summary";
@@ -32,7 +32,11 @@ function Copyright() {
         BLT
       </Link>
       {" with special thanks to JHU CSSE for their "}
-      <Link color="inherit" href="https://github.com/CSSEGISandData" target="_blank">
+      <Link
+        color="inherit"
+        href="https://github.com/CSSEGISandData"
+        target="_blank"
+      >
         data
       </Link>
       {"."}
@@ -161,7 +165,11 @@ export default function Dashboard() {
           >
             COVID-19 Supplemental Presentation
           </Typography>
-          <IconButton color="inherit" href="https://github.com/BLTGV/corona" target="_blank">
+          <IconButton
+            color="inherit"
+            href="https://github.com/BLTGV/corona"
+            target="_blank"
+          >
             <GitHubIcon />
           </IconButton>
         </Toolbar>
@@ -198,17 +206,15 @@ export default function Dashboard() {
                 <Chart />
               </Paper>
             </Grid>
-            {/* Recent Deposits */}
+            {/* Summary */}
             <Grid item xs={12} md={4} lg={3}>
               <Paper className={fixedHeightPaper}>
                 <Summary />
               </Paper>
             </Grid>
-            {/* Recent Orders */}
+            {/* Table */}
             <Grid item xs={12}>
-              <Paper className={classes.paper}>
-                <LatestDeaths />
-              </Paper>
+              <LatestDeaths />
             </Grid>
           </Grid>
           <Box pt={4}>
