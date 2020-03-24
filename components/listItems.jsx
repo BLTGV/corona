@@ -11,19 +11,21 @@ import LayersIcon from "@material-ui/icons/Layers";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 import Link from "next/link";
 
-const ButtonLink = ({ className, href, hrefAs, children, prefetch }) => (
-  <Link href={href} as={hrefAs}>
-    <a className={className}>
+const ButtonLink = React.forwardRef(({ className, href, hrefAs, children, prefetch }, ref) => {
+  return (
+    <Link href={href} as={hrefAs} ref={ref}>
+      <a className={className}>{children}</a>
+    </Link>
+  );
+});
+
+const ExternalButtonLink = React.forwardRef(({ className, href, children }, ref) => {
+  return (
+    <a className={className} href={href} target="_blank" ref={ref}>
       {children}
     </a>
-  </Link>
-)
-
-const ExternalButtonLink = ({ className, href, children }) => (
-  <a className={className} href={href} target="_blank">
-    {children}
-  </a>
-)
+  );
+});
 
 export const mainListItems = (
   <div>
@@ -33,7 +35,11 @@ export const mainListItems = (
       </ListItemIcon>
       <ListItemText primary="Dashboard" />
     </ListItem>
-    <ListItem button component={ExternalButtonLink} href="https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6">
+    <ListItem
+      button
+      component={ExternalButtonLink}
+      href="https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6"
+    >
       <ListItemIcon>
         <BarChartIcon />
       </ListItemIcon>

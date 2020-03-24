@@ -4,7 +4,8 @@ import {
   createContext,
   useMemo,
   useContext,
-  Dispatch
+  Dispatch,
+  useCallback
 } from "react";
 import { path } from "ramda";
 
@@ -41,6 +42,11 @@ const selectionStateReducer = (
         ...state,
         selectedProvence: action.selectedProvence
       };
+    case "CHANGE":
+      return {
+        selectedCountry: action.selectedCountry,
+        selectedProvence: action.selectedProvence
+      };
     default:
       return state;
   }
@@ -60,10 +66,10 @@ export function SelectionStateStoreProvider({ children, data }) {
     initialSelectionState
   );
 
-  const contextValue = useMemo(() => ({ selections, dispatch }), [
-    selections,
-    dispatch
-  ]);
+  const contextValue = useMemo(() => {
+    console.log("selectionStateChange", selections);
+    return { selections, dispatch };
+  }, [selections, dispatch]);
 
   return (
     <SelectionStateStoreContext.Provider value={contextValue}>
@@ -80,23 +86,52 @@ export function useSelectionState() {
     selections: SelectionState;
     dispatch: Dispatch<SelectionStateAction>;
   } = useContext(SelectionStateStoreContext);
+  const data = useJHUAggregateData();
 
-  const handleCountryChange = (newValue: string) =>
-    dispatch({ type: "CHANGE_COUNTRY", selectedCountry: newValue });
-  const handleProvenceChange = (newValue: string) =>
-    dispatch({ type: "CHANGE_PROVENCE", selectedProvence: newValue });
+  const { selectedCountry, selectedProvence } = selections;
+
+  const selectedIndex = useMemo(() => {
+    const index = data.locations.findIndex(
+      ({ countryOrRegion, provenceOrState }) =>
+        selectedCountry === countryOrRegion &&
+        provenceOrState === selectedProvence
+    );
+    return index < 0 ? [] : [index];
+  }, [selectedCountry, selectedProvence]);
+
+  const handleCountryChange = useCallback(
+    (newValue: string) =>
+      dispatch({ type: "CHANGE_COUNTRY", selectedCountry: newValue }),
+    []
+  );
+  const handleProvenceChange = useCallback(
+    (newValue: string) =>
+      dispatch({ type: "CHANGE_PROVENCE", selectedProvence: newValue }),
+    []
+  );
+  const handleSelectionChange = useCallback(
+    (newCountry, newProvence) =>
+      dispatch({
+        type: "CHANGE",
+        selectedCountry: newCountry,
+        selectedProvence: newProvence
+      }),
+    []
+  );
 
   return {
-    selectedCountry: selections.selectedCountry,
-    selectedProvence: selections.selectedProvence,
+    selectedCountry,
+    selectedProvence,
+    selectedIndex,
+    data,
     handleCountryChange,
-    handleProvenceChange
+    handleProvenceChange,
+    handleSelectionChange
   };
 }
 
 export function useSelectedLocaleData() {
-  const data = useJHUAggregateData();
-  const { selectedCountry, selectedProvence } = useSelectionState();
+  const { selectedCountry, selectedProvence, data } = useSelectionState();
   const selectedSeries: LocationData = path(
     [selectedCountry, selectedProvence],
     data.locationsMap

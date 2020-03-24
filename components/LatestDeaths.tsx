@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "@material-ui/core/Link";
 import { makeStyles, createMuiTheme } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
@@ -68,35 +68,48 @@ const useStyles = makeStyles(theme => ({
 
 export default function LatestDeaths() {
   const classes = useStyles();
-  const { selectedCountry, selectedProvence, handleCountryChange, handleProvenceChange } = useSelectionState();
-  const data = useJHUAggregateData();
+  const {
+    selectedCountry,
+    selectedProvence,
+    selectedIndex,
+    data,
+    handleSelectionChange
+  } = useSelectionState();
+
   const subset = take(10, data.locations);
-  
-  const onRowsSelect = ([{ dataIndex }]) => {
-    const {countryOrRegion, provenceOrState} = data.locations[dataIndex];
-    const isSameCountry = countryOrRegion === selectedCountry;
-    const isSameProvence = provenceOrState === selectedProvence;
-    if(isSameCountry && isSameProvence) return;
 
-    if(!isSameCountry) handleCountryChange(countryOrRegion);
-    if(!isSameProvence) handleProvenceChange(provenceOrState);
+  const [index, setIndex] = useState(selectedIndex);
+  useEffect(() => {
+    setIndex([]);
+    setIndex(selectedIndex);
+  }, [selectedIndex])
 
-  }
+  const handleRowSelection = useCallback((input) => {
+    const [{ dataIndex }] = input;
+    const { countryOrRegion, provenceOrState } = data.locations[dataIndex];
+    // const isSameCountry = countryOrRegion === selectedCountry;
+    // const isSameProvence = provenceOrState === selectedProvence;
+    // if (isSameCountry && isSameProvence) return;
 
-  const options = {
-    filterType: "checkbox",
-    selectableRows: "single",
-    rowsPerPage: 15,
-    disableToolbarSelect: true,
-    onRowsSelect
-  };
+    // if (!isSameCountry) handleCountryChange(countryOrRegion);
+    // if (!isSameProvence) handleProvenceChange(provenceOrState);
+    handleSelectionChange(countryOrRegion, provenceOrState);
 
-  return (
+  }, []);
+
+  return  (
     <MUIDataTable
       title={"Latest Virus Deaths"}
       data={data.locations}
       columns={COLUMNS}
-      options={options}
+      options={{
+        filterType: "checkbox",
+        selectableRows: "single",
+        rowsPerPage: 10,
+        disableToolbarSelect: true,
+        onRowsSelect: handleRowSelection,
+        rowsSelected: index
+      }}
       responsive="scrollFullHeight"
     />
   );

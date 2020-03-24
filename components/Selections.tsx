@@ -3,6 +3,7 @@ import { TextField, Box } from "@material-ui/core";
 import { useSelectionState } from "../src/state";
 import { useJHUAggregateData } from "../src/data";
 import { uniq, includes, isNil, keys, equals } from "ramda";
+import { useCallback } from "react";
 
 export default function Selections() {
   const {
@@ -14,10 +15,10 @@ export default function Selections() {
 
   const { locations, locationsMap } = useJHUAggregateData();
 
-  const onProvenceChange = (e, v, reason: string) => {
+  const onProvenceChange = useCallback((e, v, reason: string) => {
     if (isNil(v)) return handleProvenceChange("");
     return handleProvenceChange(v);
-  };
+  }, []);
 
   const countryOption: any = keys(locationsMap).sort();
   const provenceOption: any = isNil(locationsMap[selectedCountry])
