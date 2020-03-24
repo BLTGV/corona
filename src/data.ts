@@ -6,7 +6,7 @@ import { isValid, lastDayOfQuarter } from "date-fns";
 import { ma } from "moving-averages";
 
 const URL =
-  "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv";
+  "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv";
 
 export interface CoronaTrackerCsvRow {
   "Provence/State": string;
@@ -51,7 +51,7 @@ const transformDatum = (datum: CoronaTrackerCsvRow): LocationData => {
   const dateKeys = keys(datum).filter(isKeyDate);
   const withCumulativeSeries = dateKeys.map(
     (date: string): SeriesDatum => ({
-      date,
+      date: date ? date : "UNDEFINED",
       cumulativeDeaths: datum[date] ? Number.parseInt(datum[date]) : 0,
       deltaDeaths: 0,
       movingAverageDeaths: 0
@@ -82,6 +82,7 @@ const transformDatum = (datum: CoronaTrackerCsvRow): LocationData => {
     }
   );
   const lastDatum = last(withMovingAverageDeltaSeries);
+  
   const latest = {
     lastPeriod: lastDatum.date,
     lastCumulativeDeaths: lastDatum.cumulativeDeaths,
