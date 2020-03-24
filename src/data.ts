@@ -52,7 +52,7 @@ const transformDatum = (datum: CoronaTrackerCsvRow): LocationData => {
   const withCumulativeSeries = dateKeys.map(
     (date: string): SeriesDatum => ({
       date,
-      cumulativeDeaths: Number.parseInt(datum[date]),
+      cumulativeDeaths: datum[date] ? Number.parseInt(datum[date]) : 0,
       deltaDeaths: 0,
       movingAverageDeaths: 0
     })
