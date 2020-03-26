@@ -20,9 +20,10 @@ const retrieveData = async (): Promise<CoronaTrackerCsvRow[]> => {
   const res = await fetch(URL);
   const rows = await res.text();
 
-  const data = Papa.parse(rows, { header: true });
+  const csvRows = Papa.parse(rows, { header: true });
+  const filteredRows = csvRows.data.filter(r => r["Country/Region"]);
 
-  return data.data;
+  return filteredRows;
 };
 
 export interface SeriesDatum {
@@ -82,7 +83,11 @@ const transformDatum = (datum: CoronaTrackerCsvRow): LocationData => {
     }
   );
   const lastDatum = last(withMovingAverageDeltaSeries);
-  
+
+  if (!lastDatum) {
+    console.log(datum);
+  }
+
   const latest = {
     lastPeriod: lastDatum.date,
     lastCumulativeDeaths: lastDatum.cumulativeDeaths,
@@ -100,9 +105,9 @@ const transformDatum = (datum: CoronaTrackerCsvRow): LocationData => {
 };
 
 // Country, Provence Map
-interface LocationDataMap{
+interface LocationDataMap {
   [country: string]: object;
-};
+}
 
 export interface JHUAggregateData {
   locations: LocationData[];
@@ -128,9 +133,7 @@ export async function getJHUAggregateData(): Promise<JHUAggregateData> {
       locationsMap[location.countryOrRegion] = {};
     }
 
-    locationsMap
-      [location.countryOrRegion]
-      [location.provenceOrState] = location;
+    locationsMap[location.countryOrRegion][location.provenceOrState] = location;
   });
 
   const summarized = {
